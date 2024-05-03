@@ -1,4 +1,6 @@
-﻿namespace Source.Lib;
+﻿using WCSharp.Api;
+
+namespace Source.Lib;
 
 /// <summary>
 /// Contains paths to special effects used in the map or api.
@@ -44,4 +46,13 @@ internal static class SpecialEffects
 	/// Path to the special effect for strength/agility/inteligence gain for target.
 	/// </summary>
 	internal const string ItemStrAgiIntGain = @"Abilities\Spells\Items\AIlm\AIlmTarget.mdl";
+
+	/// <summary>
+	/// Creates and immediately disposes a special effect at the specified position.
+	/// </summary>
+	/// <param name="modelPath">The path to the model of the special effect.</param>
+	/// <param name="posX">The X-coordinate where the special effect should be created.</param>
+	/// <param name="posY">The Y-coordinate where the special effect should be created.</param>
+	public static void FireAway(string modelPath, float posX, float posY)
+		=> effect.Create(modelPath, posX, posY).Dispose();
 }

@@ -84,7 +84,7 @@ public static class GroupExtensions
 	/// <param name="whichGroup">The group to add the units to.</param>
 	/// <param name="rect">The rectangular area to enumerate units within.</param>
 	/// <returns>The group with the enumerated units within the specified rectangular area added.</returns>
-	public static group EnumUnitsInRect(this group whichGroup, Rectangle rect)
+	public static group EnumerateUnitsInRect(this group whichGroup, Rectangle rect)
 		=> EnumUnitsInRect(whichGroup, rect.Rect);
 
 	/// <summary>

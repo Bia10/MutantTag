@@ -27,7 +27,7 @@ public class Hero
 			if (numberOfHeroesOwnedByOwner != 0) return;
 
 			unit.Create(caster.Owner, Constants.UNIT_H00G_PALADIN_HERO, caster.X, caster.Y);
-			DestroyEffect(AddSpecialEffect(SpecialEffects.AwakenHero, caster.X, caster.Y));
+			SpecialEffects.FireAway(SpecialEffects.AwakenHero, caster.X, caster.Y);
 		});
 
 		// Trigger: Hero died respawn after 10 secs at hero house owned by dying hero's player.
@@ -77,8 +77,8 @@ public class Hero
 					caster.Owner.SetTechResearched(Constants.UPGRADE_R008_SHADOW_WALK_WARDEN, 1);
 					break;
 				case Constants.UPGRADE_R007_RAIN_OF_ROCKS_MOUTAIN_KING:
-					// Add rain of rocks
 					caster.Owner.SetTechResearched(Constants.UPGRADE_R007_RAIN_OF_ROCKS_MOUTAIN_KING, 1);
+					upgradedHero.AddAbility(Constants.ABILITY_A00G_RAIN_OF_ROCKS_MOUNTAIN_KING);
 					break;
 			}
 		});

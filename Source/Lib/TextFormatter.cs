@@ -133,6 +133,7 @@ public static class TextFormatter
 	/// <param name="endColor">The ending color.</param>
 	/// <param name="useLowercaseHex">Determines whether to use lowercase hexadecimals.</param>
 	/// <returns>The gradient coloured text.</returns>
+	/// TODO: this explodes the string size significantly figure out maximum msg length and possibility to adjust steps?
 	public static string GenerateGradient(string text, string startColor, string endColor, bool useLowercaseHex = false)
 	{
 		// Count the number of characters in the text (excluding spaces)

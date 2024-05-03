@@ -111,8 +111,8 @@ public static class Program
 			spawnedUnit.Select();
 
 			// select random from neutral hero houses
-			unit randomHouse = CreateGroup()
-				.EnumUnitsInRect(Rectangle.WorldBounds)
+			unit randomHouse = group.Create()
+				.EnumerateUnitsInRect(Rectangle.WorldBounds)
 				.EmptyToList()
 				.Where(u => u.UnitType == Constants.UNIT_H00C_HOUSE_PLAYER)
 				.OrderBy(_ => new Random().Next())
@@ -163,10 +163,24 @@ public static class Program
 		trigger? trigger = CreateTrigger();
 
 		// Todo: some better mechanics the old sux ass
-		// if Player(0)'s unit dies -> of type mutant
-		// give 75 % chance to resurrect as carrion beetle
-		// play birth anim
-		// order to attack
+		PlayerUnitEvents.Register(UnitTypeEvent.Dies, () =>
+		{
+			unit deadUnit = GetTriggerUnit();
+			if (deadUnit.UnitType != Constants.UNIT_N000_MUTANT_MUTANT)
+				return;
+
+			player? owner = deadUnit.Owner;
+			var x = deadUnit.X;
+			var y = deadUnit.Y;
+
+			deadUnit.SafelyRemove();
+
+			var chance = new Random().Next(100);
+			if (chance >= 75) return;
+
+			var beetle = unit.Create(owner, Constants.UNIT_U003_CARRION_BEETLE_MUTANT_BUG, x, y);
+			beetle.IssueOrder(Constants.ORDER_ATTACK);
+		});
 
 		return trigger;
 	}
@@ -189,34 +203,34 @@ public static class Program
 				$" to the chat channel to change it, {diffTriggerTimeout} seconds left.";
 
 			HumanPlayers.DisplayMessageToPlayers(msg);
+
+			CreateTrigger()
+				.RegisterTimerEvent(diffTriggerTimeout)
+				.RegisterChatEvents(hostPlayer, new List<string> { "normal", "hard", "Normal", "Hard" }, true)
+				.AddAction(() =>
+				{
+					trigger thisTrigger = GetTriggeringTrigger();
+					player mutantsPlayer = Player(0);
+
+					switch (GetEventPlayerChatString())
+					{
+						case "normal" or "Normal":
+							mutantsPlayer.SetTechResearched(Constants.UPGRADE_R005_HARD_DIFFICULTY_SETTINGS, 1);
+							HumanPlayers.DisplayMessageToPlayers("Difficulty is just normal.");
+							thisTrigger.Disable();
+							break;
+						case "hard" or "Hard":
+							mutantsPlayer.SetTechResearched(Constants.UPGRADE_R005_HARD_DIFFICULTY_SETTINGS, 2);
+							HumanPlayers.DisplayMessageToPlayers("Difficulty might get hard.");
+							thisTrigger.Disable();
+							bugsTrigger.Enable();
+							break;
+					}
+
+					thisTrigger.Dispose();
+				});
+
 			timer.Dispose();
 		});
-
-		CreateTrigger()
-			.RegisterTimerEvent(diffTriggerTimeout)
-			.RegisterChatEvents(hostPlayer, new List<string> { "normal", "hard", "Normal", "Hard" }, true)
-			.AddAction(() =>
-			{
-				trigger thisTrigger = GetTriggeringTrigger();
-				player mutantsPlayer = Player(0);
-
-				switch (GetEventPlayerChatString())
-				{
-					case "normal" or "Normal":
-						mutantsPlayer.SetTechResearched(Constants.UPGRADE_R005_HARD_DIFFICULTY_SETTINGS, 1);
-						HumanPlayers.DisplayMessageToPlayers("Difficulty is just normal.");
-						thisTrigger.Disable();
-						break;
-					case "hard" or "Hard":
-						mutantsPlayer.SetTechResearched(Constants.UPGRADE_R005_HARD_DIFFICULTY_SETTINGS, 2);
-						HumanPlayers.DisplayMessageToPlayers("Difficulty might get hard.");
-						thisTrigger.Disable();
-						bugsTrigger.Enable();
-						// Todo: EnableTrigger(BugsTrigger);
-						break;
-				}
-
-				thisTrigger.Dispose();
-			});
 	}
 }
